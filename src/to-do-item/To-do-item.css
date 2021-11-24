@@ -1,0 +1,34 @@
+.itemContainer{
+    display: flex;
+    justify-content: space-between;
+}
+
+.itemInput{
+    background-color: aqua;
+    width: 80%;
+    font-size: 35px;
+    padding: 10px;
+    border: 2px solid #003333;
+}
+
+.itemInputBack{
+    background-color: #009999;
+    width: 80%;
+    font-size: 35px;
+    padding: 10px;
+    border: 2px solid #003333;
+}
+
+.itemButtonContainer{
+    display: flex;
+    justify-content: space-between;
+    width: 20%;
+}
+
+
+.itemButton{
+    border: 2px solid #003333;
+    background-color: #00ffff;
+    width: 100%;
+    font-size: 35px;
+}

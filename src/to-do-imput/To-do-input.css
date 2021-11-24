@@ -1,6 +1,7 @@
 .headerInput{
-    width: 100%;
+    width: 80%;
     height: 40px;
     font-size: 30px;
     outline: none;
+    padding: 10px;
 }

@@ -13,7 +13,6 @@
     font-size: 50px;
     background-color: #999999;
     padding-bottom: 20px ;
-    margin: 0;
 }
 
 .inputContainer{
@@ -29,9 +28,6 @@
     color: #000000;
     font-size: 30px;
     background-color: #555555;
+    border: none;
 }
 
-.headerButton:hover{
-    color: #ff0000;
-    background-color: #990000;
-}
