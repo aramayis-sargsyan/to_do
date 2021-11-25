@@ -1,39 +1,61 @@
 import React, { useState } from 'react';
-import ToDoInput from "../to-do-imput/To-do-input";
-import  ToDoItem from "../to-do-item/To-do-item"
-import ToDoFooter from "./o-do-footer/To-do-footer";
+import  Item from "../item/item"
+import Footer from "../footer/footer";
+import Header from "../header/header";
 import { generateUniqueID } from "web-vitals/dist/modules/lib/generateUniqueID";
 import "./To-do.css"
 
 export default function ToDo () {
     const [text, setText] = useState("");
     const [items, setItems] = useState([]);
-    const [filterItems, setFilterItems] = useState([]);
-
-
+    const [filter, setFilter] = useState("all");
+    const [validText, setValidText] = useState("");
 
     function addItem(e,text){
         const id = generateUniqueID()
-        if(text.length>0) {
+        if(text.trim().length>=6) {
+            setValidText((validText)=>{
+                return ""
+            })
             setItems((prevItems) => {
-                return  [...prevItems, {text,id,isEditable:false,isCompleted:false}]
+                return  [...prevItems, {text,id,isEditable:false,isCompleted:false,isEmpty:false}]
             })
             setText(()=>{
                 return ""
+            })
+        }else {
+            setValidText((validText)=>{
+                return "afa as gfas gdsg dfghd fdg hfd h"
             })
         }
     }
 
     function addItemEnter(e){
         const id = generateUniqueID()
-        if(e.target.value.length>0&&e.key === "Enter") {
+        if(e.target.value.trim().length>=6&&e.key === "Enter") {
+            setValidText((validText)=>{
+                return ""
+            })
             setItems((prevItems) => {
-                return prevItems = [...prevItems, {text:e.target.value,id,isEditable:false,isCompleted:false}]
+                return prevItems = [...prevItems, {text:e.target.value,id,isEditable:false,isCompleted:false, isEmpty:false}]
             })
             setText(()=>{
                 return ""
             })
+        }else if(e.key === "Enter"){
+            setValidText((validText)=>{
+                return "afa as gfas gdsg dfghd fdg hfd h"
+            })
         }
+    }
+
+    function changeItemText(e){
+        setItems((prevItems) => {
+            prevItems.find((el)=>{
+                return el.isEditable
+            }).text =e.target.value
+            return prevItems
+        })
     }
 
     function changeHandler(e){
@@ -50,14 +72,35 @@ export default function ToDo () {
 
     function fixItem(id){
         setItems((prevItems) => {
-            return prevItems.map((el)=>el.id!==id?el:{...el, isCompleted:!el.isCompleted})
+            return prevItems.map((el)=>{
+              return el.id!==id?el:{...el, isCompleted:!el.isCompleted}
+            })
         })
     }
 
-    function checkItem(id){
-        setItems((prevItems) => {
-            return prevItems.map((el)=>el.id!==id?el:{...el, isEditable:!el.isEditable})
-        })
+    function checkItem(e,id) {
+        if (e.key === "Enter") {
+            items.find((el)=>{
+                console.log(el)
+                return el.id===id
+            }).text=e.target.value
+            setItems((prevItems) => {
+                return prevItems.map((el) => {
+                    return el.id !== id ? el : {
+                        ...el, isEditable: !el.isEditable
+                    }
+                })
+            })
+        }
+        if(e.type==="click"){
+            setItems((prevItems) => {
+                return prevItems.map((el) => {
+                    return el.id !== id ? el : {
+                        ...el, isEditable: !el.isEditable
+                    }
+                })
+            })
+        }
     }
 
     function delAll(){
@@ -71,44 +114,31 @@ export default function ToDo () {
             return prevItems.filter((el)=> {
                 return  el.isCompleted===false;
             })
+
         })
     }
 
-    function handleFix(){
-
-        setFilterItems((filterItems)=>{
-            return filterItems.filter((el)=> {
-                return  el.isCompleted===true;
-            })
-        })
-    }
-
-    function handleAll(){
-
-        setItems((prevItems)=>{
-            return prevItems
+    function handleAll(e){
+        setFilter(()=>{
+            return e
         })
     }
 
     return (
-        <div className="container">
+    <div className="container">
+        <div className={"header1"}>
 
-        <div className="header">
-            <p className="text">To-Do List</p>
-
-            <div className="inputContainer">
-                <ToDoInput changeHandler={changeHandler} addItemEnter={addItemEnter} type={text} text={text}/>
-                <button onClick={(e) => addItem(e,text)} className="headerButton">
-                Add
-            </button>
-            </div>
+            <Header changeHandler={changeHandler} addItemEnter={addItemEnter} text={text} addItem={addItem} validText={validText}/>
 
             <div>
                 <ul className="asd">
                 {
-                    items.map((el)=>{
+                    filter==="fix"?
+                        items.filter((el)=>el.isCompleted)
+                            .map((el)=>{
                         return (
-                            <ToDoItem
+                            <Item
+                                key={el.id}
                                 text={el.text}
                                 delItem={delItem}
                                 fixItem={fixItem}
@@ -116,19 +146,33 @@ export default function ToDo () {
                                 id={el.id}
                                 isCompleted={el.isCompleted}
                                 isEditable={el.isEditable}
+                                changeItemText={changeItemText}
+                                isEmpty={el.isEmpty}
                             />
                         )
-                    })
+                    }): items.map((el)=>{
+                            return (
+                                <Item
+                                    key={el.id}
+                                    text={el.text}
+                                    delItem={delItem}
+                                    fixItem={fixItem}
+                                    checkItem={checkItem}
+                                    id={el.id}
+                                    isCompleted={el.isCompleted}
+                                    isEditable={el.isEditable}
+                                    changeItemText={changeItemText}
+                                    isEmpty={el.isEmpty}
+                                />
+                            )
+                        })
                 }
                 </ul>
             </div>
 
-            <div>
-                <ToDoFooter delAll={delAll} delFix={delFix} handleFix={handleFix} handleAll={handleAll}/>
-            </div>
+            <Footer delAll={delAll} delFix={delFix} handleAll={handleAll} fix={items.filter((el)=> el.isCompleted).length} all={items.length}/>
 
         </div>
-
-        </div>
+    </div>
     );
 }
